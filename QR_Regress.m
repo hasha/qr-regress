@@ -1,4 +1,9 @@
-%%
+%%Matlab implementation of Westwick et al. (2006) "Identification of
+%%Multiple-Input Systems with Highly Coupled Inputs: Application to EMG
+%%Prediction from Multiple Intracortical Electrodes" Neural Computation
+%%18(2)
+
+%2014 Alireza Hashemi
 
 for i = 1:nChannels
     Ch{i} = reshape(Ch{i},nTrials,trialLength);
@@ -10,24 +15,26 @@ stim = reshape(stim,nTrials,trialLength);
 
 for i = 1:nChannels
     
-x = Ch{i};
-y = stim;    
-nTrials = size(x, 1);
-L = size(x, 2);
-nEqsPerTrial = (L - Lf + 1) * ones(nTrials,1);
-nEqs = nEqsPerTrial(1) * nTrials;
-A = zeros(nEqs, Lf);
-Y = zeros(nEqs,1);
+    x = Ch{i};
+    y = stim;    
+    nTrials = size(x, 1);
+    L = size(x, 2);
+    nEqsPerTrial = (L - Lf + 1) * ones(nTrials,1);
+    nEqs = nEqsPerTrial(1) * nTrials;
+    A = zeros(nEqs, Lf);
+    Y = zeros(nEqs,1);
 
-j = 1;
+    j = 1;
 
 for k = 1 : nTrials
+    
     at = toeplitz(x(k,:), [x(k,1) zeros(1,Lf-1)]);
     at = at(Lf : end, :);
     yt = y(k, Lf : end)';
     A(j : j+nEqsPerTrial(k)-1, :) = at;
     Y(j : j+nEqsPerTrial(k)-1) = yt;
     j = j + nEqsPerTrial(k);
+
 end
 Ch{i} = NaN(nEqs,Lf);
 Ch{i} = A;
